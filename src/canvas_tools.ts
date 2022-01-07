@@ -5,16 +5,21 @@ export function manage(
 ) {
     restyle(element, {width, height});
     var ctx: CanvasRenderingContext2D = element.getContext("2d")
+    ctx.imageSmoothingEnabled=false;
     
     var frame=0.0
+
     var previousTs=null
+    var drawTo=ctx.createImageData(width,height);
+
     var onRedraw = (ts: DOMHighResTimeStamp) => {
-        frame+=(ts-previousTs) * (60/1000)
+        var frameTime = (ts - previousTs) * (1/1000)
         previousTs=ts;
 
-        while (frame>0.0) { update(); frame-=1.0; }
+        frame+=frameTime*60;
+
+        while (frame>1.0) { update(); frame-=1.0; }
         
-        var drawTo=ctx.createImageData(width, height);
         draw(drawTo);
         ctx.putImageData(drawTo,0,0);
 
@@ -35,4 +40,6 @@ function restyle(
     element.style.objectFit="contain";
     element.style.margin="auto";
     element.style.display="block";
+
+    element.style.imageRendering="pixelated";
 }

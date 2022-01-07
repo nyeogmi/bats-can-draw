@@ -14,8 +14,19 @@ function setup() {
     var frame=0
     return {
         draw: function(idata: ImageData) {
-            for(var i=0; i<idata.width * idata.height * 4; i++) {
-                idata.data[i]=i%4==3?frame*2+128:i%4==0?255:0;
+            var width=idata.width
+            var height=idata.height
+            var data=idata.data
+
+            for (var y=0; y<height; y++) {
+                for(var x=0; x<width; x++) {
+                    var ix = (y * width + x) * 4;
+                    var x2 = (x - frame + 128) % 16;
+                    data[ix+0] = (x2+y)%16 < 8 ? 0: 255;
+                    data[ix+1] = 0;
+                    data[ix+2] = 0;
+                    data[ix+3] = 255;
+                }
             }
         },
         update: function() {

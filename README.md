@@ -11,8 +11,6 @@ Namely that means:
 
 I'll probably add some support for Pico-8 style IO later. (I haven't coded this yet)
 
-I'll also set it up to use nearest-neighbor scaling. (which is just a CSS thing)
-
 ## What I coded
 
 - I set up the canvas to auto-resize to match the container.
@@ -54,8 +52,6 @@ Man, JavaScript tooling wreaks fucking havoc on your directory structure, doesn'
 
 ## TODO
 
-- Use nearest-neighbor scaling
-- Tell the browser we want 60fps
 - Provide a higher level interface to canvas operations
 
 ## Explicitly not in scope
