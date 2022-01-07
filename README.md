@@ -18,6 +18,7 @@ I'll also set it up to use nearest-neighbor scaling. (which is just a CSS thing)
 - I set up the canvas to auto-resize to match the container.
 - I set the code up to run update() at about 60fps and draw() at the browser's chosen framerate
 - I wrote a little demo in main.ts that exploits these features
+- I added a .gitignore which you can adapt for your project
 
 ## Why you would use this
 
@@ -45,7 +46,7 @@ Parcel seems immature and kind of unstable. When I used `<link rel="stylesheet" 
 
 ## What you'll end up with
 
-- A package.json and yarn.lock file which collectively say "this project uses Parcel"
+- A package.json and yarn.lock file which collectively say "this project uses Parcel." You should version control these so other people can build your code on the exact same package configuration.
 - Some parcel-specific folders to not touch (.parcel-cache, dist)
 - Some NPM-specific folders to not touch (node_modules)
 
