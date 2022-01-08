@@ -1,9 +1,9 @@
+import { Bats, manage } from "./batscandraw";
 import "./reset.css"
-import * as canvas_tools from "./canvas_tools"
 
 function main() {
     var {draw,update}=setup();
-    canvas_tools.manage(
+    manage(
         document.getElementById("game") as HTMLCanvasElement,
         {width:320, height:240},
         {draw, update}
@@ -13,29 +13,26 @@ function main() {
 function setup() {
     var frame=0
     return {
-        draw: function(input: canvas_tools.InputState, idata: ImageData) {
-            var width=idata.width
-            var height=idata.height
-            var data=idata.data
+        draw: function(bats: Bats) {
+            var width=bats.width
+            var height=bats.height
 
+            
             for (var y=0; y<height; y++) {
                 for(var x=0; x<width; x++) {
-                    var ix = (y * width + x) * 4;
                     var x2 = (x - frame + 128) % 16;
-                    if (input.x) {
-                        data[ix+0] = (x2+y)%16 < 8 ? 0: 255;
-                        data[ix+1] = 0;
-                        data[ix+2] = 0;
-                    } else {
-                        data[ix+0] = (x2+y)%16 < 8 ? 0: 100;
-                        data[ix+1] = 0;
-                        data[ix+2] = 0;
-                    }
-                    data[ix+3] = 255;
+                    var color = bats.x ? 11 : 2;
+
+                    bats.pixel(x, y, (x2+y) % 16 < 8 ? color: 0)
                 }
             }
+
+           bats.rectho(0, 0, 16, 16, 7);
+           bats.lineho(0, 0, 16, 8, 4);
+           bats.circfill(32, 32, 17, 11);
+           bats.circ(32, 32, 21, 10);
         },
-        update: function(input: canvas_tools.InputState) {
+        update: function(bats: Bats) {
             frame+=1
             frame=frame%64
         }
