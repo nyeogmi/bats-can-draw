@@ -17,6 +17,7 @@ I'll probably add some support for Pico-8 style IO later. (I haven't coded this 
 - I set the code up to run update() at about 60fps and draw() at the browser's chosen framerate
 - I wrote a little demo in main.ts that exploits these features
 - I added a .gitignore which you can adapt for your project
+- I added Pico-8-style keyboard input
 
 ## Why you would use this
 
