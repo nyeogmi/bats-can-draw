@@ -50,6 +50,7 @@ export function manage(
 
         frame+=frameTime*60;
 
+        if (frame>10.0) { frame=0.0 } // ultimately limit the number of frames we get behind
         while (frame>1.0) { update(inputState); frame-=1.0; }
         
         draw(inputState, drawTo);
