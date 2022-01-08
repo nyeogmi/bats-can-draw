@@ -1,12 +1,13 @@
 # bats-can-draw
 
-Hey! This is just a quick starter kit for pixel buffery gamedev on Canvas with Parcel.
+Hey! This is just a quick starter kit for Pico-8-style gamedev on Canvas with Parcel.
 
 Namely that means:
 
 - Fixed framerate (Currently 60)
 - Pixel buffer for draw operations
 - You own the main loop
+- Fixed palette (Currently hardcoded: the pico 8 palette)
 - No scenegraph
 
 I'll probably add some support for Pico-8 style IO later. (I haven't coded this yet)
@@ -17,7 +18,7 @@ I'll probably add some support for Pico-8 style IO later. (I haven't coded this 
 - I set the code up to run update() at about 60fps and draw() at the browser's chosen framerate
 - I wrote a little demo in main.ts that exploits these features
 - I added a .gitignore which you can adapt for your project
-- I added Pico-8-style keyboard input
+- I added Pico-8-style keyboard input and graphics operations
 
 ## Why you would use this
 
@@ -53,7 +54,8 @@ Man, JavaScript tooling wreaks fucking havoc on your directory structure, doesn'
 
 ## TODO
 
-- Provide a higher level interface to canvas operations
+- Text
+- Spritesheets
 
 ## Explicitly not in scope
 
