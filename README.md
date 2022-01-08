@@ -55,6 +55,7 @@ Man, JavaScript tooling wreaks fucking havoc on your directory structure, doesn'
 ## TODO
 
 - Text
+- Palette, clip, and camera commands
 - Spritesheets
 
 ## Explicitly not in scope
