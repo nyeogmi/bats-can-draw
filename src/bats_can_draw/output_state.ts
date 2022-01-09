@@ -8,24 +8,24 @@ export class OutputState {
     readonly width: number
     readonly height: number
 
-    readonly #resources: Resources
+    readonly _resources: Resources
 
-    #font: Font
-    #sheet: SpriteSheet | null
+    _font: Font
+    _sheet: SpriteSheet | null
 
     // used by camera command
-    #cameraX: number
-    #cameraY: number
+    _cameraX: number
+    _cameraY: number
 
     // used by clip command
-    #clipX0: number
-    #clipY0: number
-    #clipX1: number
-    #clipY1: number
+    _clipX0: number
+    _clipY0: number
+    _clipX1: number
+    _clipY1: number
 
     // used by pal command
-    #pal: Uint8ClampedArray
-    #palt: Uint8ClampedArray
+    _pal: Uint8ClampedArray
+    _palt: Uint8ClampedArray
 
     constructor(data: Uint8ClampedArray, width: number, height: number, resources: Resources) {
         this.data = data
@@ -33,22 +33,22 @@ export class OutputState {
         this.width = width
         this.height = height
 
-        this.#resources = resources
+        this._resources = resources
 
-        this.#font = PICO8_FONT
-        this.#sheet = null
+        this._font = PICO8_FONT
+        this._sheet = null
         this.font(PICO8_FONT)
 
-        this.#cameraX = 0
-        this.#cameraY = 0
+        this._cameraX = 0
+        this._cameraY = 0
 
-        this.#pal = new Uint8ClampedArray(256)
-        this.#palt = new Uint8ClampedArray(256)
+        this._pal = new Uint8ClampedArray(256)
+        this._palt = new Uint8ClampedArray(256)
 
-        this.#clipX0=0
-        this.#clipY0=0
-        this.#clipX1=width
-        this.#clipY1=height
+        this._clipX0=0
+        this._clipY0=0
+        this._clipX1=width
+        this._clipY1=height
 
         this.pal()
         this.palt()
@@ -57,16 +57,16 @@ export class OutputState {
 
     unsafePixel(x: number, y: number, color: number) {
         // TODO: After implementing clipping, do it here
-        if (x >= this.#clipX0 && y >= this.#clipY0 && x < this.#clipX1 && y < this.#clipY1) {
+        if (x >= this._clipX0 && y >= this._clipY0 && x < this._clipX1 && y < this._clipY1) {
             var ix = y * this.width + x;
             this.data[ix] = color;
         }
     }
 
     pixel(x0: number, y0: number, color: number) {
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
 
-        this.unsafePixel(Math.floor(x0) + this.#cameraX, Math.floor(y0) + this.#cameraY, realColor)
+        this.unsafePixel(Math.floor(x0) + this._cameraX, Math.floor(y0) + this._cameraY, realColor)
     }
 
     rect(x0: number, y0: number, x1: number, y1: number, color: number) {
@@ -117,12 +117,12 @@ export class OutputState {
             return
         }
 
-        xMin += this.#cameraX;
-        yMin += this.#cameraY;
-        xMax += this.#cameraX;
-        yMax += this.#cameraY;
+        xMin += this._cameraX;
+        yMin += this._cameraY;
+        xMax += this._cameraX;
+        yMax += this._cameraY;
 
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
         for (var x=xMin; x < xMax; x++) {
             this.unsafePixel(x, yMin, realColor)
             this.unsafePixel(x, yMax-1, realColor)
@@ -150,12 +150,12 @@ export class OutputState {
             return
         }
 
-        xMin += this.#cameraX;
-        yMin += this.#cameraY;
-        xMax += this.#cameraX;
-        yMax += this.#cameraY;
+        xMin += this._cameraX;
+        yMin += this._cameraY;
+        xMax += this._cameraX;
+        yMax += this._cameraY;
 
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
         for (var y = yMin; y < yMax; y++) {
             for (var x = xMin; x < xMax; x++) {
                 this.unsafePixel(x, y, realColor)
@@ -180,12 +180,12 @@ export class OutputState {
         dx <<= 2;
         dy <<= 2;
 
-        x0 += this.#cameraX;
-        y0 += this.#cameraY;
-        x1 += this.#cameraX;
-        y1 += this.#cameraY;
+        x0 += this._cameraX;
+        y0 += this._cameraY;
+        x1 += this._cameraX;
+        y1 += this._cameraY;
 
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
         if (dx > dy) {
             var fraction = dy - (dx >> 1);
             while (true) {
@@ -232,10 +232,10 @@ export class OutputState {
         var dy = 1;
         var err = 0;
 
-        x0 += this.#cameraX;
-        y0 += this.#cameraY;
+        x0 += this._cameraX;
+        y0 += this._cameraY;
 
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
         while (x >= y) {
             this.unsafePixel(x0 + x, y0 + y, realColor)
             this.unsafePixel(x0 - x, y0 + y, realColor)
@@ -264,10 +264,10 @@ export class OutputState {
         var dy = 1;
         var err = 0;
 
-        x0 += this.#cameraX;
-        y0 += this.#cameraY;
+        x0 += this._cameraX;
+        y0 += this._cameraY;
 
-        let realColor = this.#pal[color]
+        let realColor = this._pal[color]
         while (x >= y) {
             for (var x_=x0-x; x_ <= x0+x; x_++) {
                 this.unsafePixel(x_, y0 + y, realColor)
@@ -286,19 +286,19 @@ export class OutputState {
     }
 
     font(font: Font) {
-        this.#font=font;
-        this.#resources.getSpriteSheetForFont(this.#font)  // preload
+        this._font=font;
+        this._resources.getSpriteSheetForFont(this._font)  // preload
     }
 
     print(text: string, x: number, y: number, color: number) {
-        var ss = this.#resources.getSpriteSheetForFont(this.#font)
-        let realColor = this.#pal[color]
+        var ss = this._resources.getSpriteSheetForFont(this._font)
+        let realColor = this._pal[color]
 
-        x += this.#cameraX;
-        y += this.#cameraY;
+        x += this._cameraX;
+        y += this._cameraY;
 
         for (var c of text) {
-            ss.drawSprite(c.charCodeAt(0)-this.#font.char0, 1, 1, (px, py, v) => {
+            ss.drawSprite(c.charCodeAt(0)-this._font.char0, 1, 1, (px, py, v) => {
                 if (v == 255) { return; }
                 this.pixel(x+px, y+py, realColor)
             })
@@ -307,27 +307,27 @@ export class OutputState {
     }
 
     sheet(sheet: SpriteSheet) {
-        this.#sheet=sheet;
-        this.#resources.getSpriteSheetForSpriteSheet(this.#sheet)  // preload
+        this._sheet=sheet;
+        this._resources.getSpriteSheetForSpriteSheet(this._sheet)  // preload
     }
 
     spr(n: number, x: number, y: number, w: number, h: number, flip_x: boolean, flip_y: boolean) {
-        if (this.#sheet == null) { return }
+        if (this._sheet == null) { return }
 
-        var ss = this.#resources.getSpriteSheetForSpriteSheet(this.#sheet);
+        var ss = this._resources.getSpriteSheetForSpriteSheet(this._sheet);
         var width = w * ss.spriteWidth;
         var height = h * ss.spriteHeight;
 
-        x += this.#cameraX;
-        y += this.#cameraY;
+        x += this._cameraX;
+        y += this._cameraY;
 
-        let palt = this.#palt;
+        let palt = this._palt;
         ss.drawSprite(n, w, h, (px, py, v) => {
             if (flip_x) { px = width - px - 1 }
             if (flip_y) { py = height - py - 1 }
 
             if (palt[v] != 0) { return; }
-            let realColor = this.#pal[v]
+            let realColor = this._pal[v]
             this.pixel(x+px, y+py, realColor)
         })
     }
@@ -336,39 +336,39 @@ export class OutputState {
         if (c0 === undefined && c1 === undefined) {
             // reset palette
             for (var i = 0; i<256; i++) {
-                this.#pal[i] = i;
+                this._pal[i] = i;
             }
         } else if (c0 === undefined || c1 === undefined) {
             throw TypeError("either both arguments must be present or neither");
         } else {
-            this.#pal[c0] = c1;
+            this._pal[c0] = c1;
         }
     }
 
     palt(c0?: number, transparent?: boolean) {
         if (c0 === undefined && transparent === undefined) {
             for (var i = 0; i<256; i++) {
-                this.#palt[i] = 0
+                this._palt[i] = 0
             }
-            this.#palt[255] = 1
+            this._palt[255] = 1
         } else if (c0 === undefined || transparent === undefined) {
             throw TypeError("either both arguments must be present or neither")
         } else {
-            this.#palt[c0] = transparent ? 1 : 0;
+            this._palt[c0] = transparent ? 1 : 0;
         }
     }
 
     camera(x: number, y: number) {
-        this.#cameraX = -x;
-        this.#cameraY = -y;
+        this._cameraX = -x;
+        this._cameraY = -y;
     }
 
     clip(x?: number, y?: number, w?: number, h?: number, previous?: boolean) {
         if (typeof x == "undefined" && typeof y == "undefined" && typeof w == "undefined" && typeof h == "undefined") {
-            this.#clipX0 = 0
-            this.#clipY0 = 0
-            this.#clipX1 = this.width
-            this.#clipY1 = this.height
+            this._clipX0 = 0
+            this._clipY0 = 0
+            this._clipX1 = this.width
+            this._clipY1 = this.height
         } else if (typeof x == "undefined" || typeof y == "undefined" || typeof w == "undefined" || typeof h == "undefined") { 
             throw TypeError("either four arguments must be present, five, or neither");
         } else {
@@ -378,16 +378,16 @@ export class OutputState {
             let y1 = y + h;
 
             if (previous) {
-                x0 = Math.max(this.#clipX0, x0);
-                y0 = Math.max(this.#clipY0, y0);
-                x1 = Math.min(this.#clipX1, x1);
-                y1 = Math.min(this.#clipY1, y1);
+                x0 = Math.max(this._clipX0, x0);
+                y0 = Math.max(this._clipY0, y0);
+                x1 = Math.min(this._clipX1, x1);
+                y1 = Math.min(this._clipY1, y1);
             }
 
-            this.#clipX0=x0;
-            this.#clipY0=y0;
-            this.#clipX1=x1;
-            this.#clipY1=y1;
+            this._clipX0=x0;
+            this._clipY0=y0;
+            this._clipX1=x1;
+            this._clipY1=y1;
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "bats_can_draw",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "pico 8-like functionality over Canvas",
   "main": "lib/bats_can_draw.js",
   "types": "lib/bats_can_draw.d.ts",
@@ -26,5 +26,5 @@
     "ts-jest": "^27.1.2",
     "typescript": "^4.5.4"
   },
-  "files": ["src/**/*"]
+  "files": ["src/**/*", "lib/**/*"]
 }

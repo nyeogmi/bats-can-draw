@@ -46,7 +46,7 @@ In addition, Parcel doesn't use the real typescript compiler and has a default b
 - Initialize Yarn (`yarn init -y`)
 - Install Parcel (`yarn add --dev parcel`. I use 2.1.1)
 - Install bats-can-draw (`yarn add file:..` if you just cloned from git and are using the actual `demo` folder; `yarn add bats_can_draw` otherwise)
-- Run Parcel from your project (`cd kobolds`, `yarn parcel src/index.html --no-cache`) 
+- Run Parcel from your project (`cd kobolds`, `yarn parcel src/**/* --no-cache`) 
 - Navigate to Parcel's URL in your browser: `http://localhost:1234`
 
 ## What you'll end up with

@@ -1,13 +1,13 @@
 import { InternalSpriteSheet } from "./spritesheet";
 
 export class Resources {
-    #spritesheets: Map<string, InternalSpriteSheet>
-    #palette: Uint8ClampedArray
+    _spritesheets: Map<string, InternalSpriteSheet>
+    _palette: Uint8ClampedArray
 
     constructor(palette: Uint8ClampedArray) {
-        this.#spritesheets = new Map();
+        this._spritesheets = new Map();
 
-        this.#palette = palette
+        this._palette = palette
     }
 
     getSpriteSheetForSpriteSheet(spritesheet: SpriteSheet):  InternalSpriteSheet {
@@ -19,11 +19,11 @@ export class Resources {
     }
 
     getSpriteSheet(name: string, url: string, w: number, h: number, transparent: number): InternalSpriteSheet {
-        var ss = this.#spritesheets.get(name);
+        var ss = this._spritesheets.get(name);
         if (ss !== undefined) { return ss; }
 
         // default to a blank spritesheet
-        this.#spritesheets.set(name, new InternalSpriteSheet(new Uint8ClampedArray(0), 0, 0, w, h));
+        this._spritesheets.set(name, new InternalSpriteSheet(new Uint8ClampedArray(0), 0, 0, w, h));
 
         var img = new Image();
         img.onload = (e) => {
@@ -37,22 +37,22 @@ export class Resources {
             ctx.drawImage(img, 0, 0);
             let data = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight)
 
-            this.#spritesheets.set(name, this.#processSpriteSheet(data, w, h, transparent));
+            this._spritesheets.set(name, this._processSpriteSheet(data, w, h, transparent));
         }
         img.onerror = (e) => {
             console.error(`could not load spritesheet ${url}: ${e}`)
         }
         img.src = url
 
-        ss = this.#spritesheets.get(name)
+        ss = this._spritesheets.get(name)
         if (ss === undefined) {
             throw new TypeError("spritesheet was somehow undefined")
         }
         return ss;
     }
 
-    #processSpriteSheet(data: ImageData, spriteWidth: number, spriteHeight: number, transparent: number): InternalSpriteSheet {
-        var mapper = new ColorMapper(this.#palette);
+    _processSpriteSheet(data: ImageData, spriteWidth: number, spriteHeight: number, transparent: number): InternalSpriteSheet {
+        var mapper = new ColorMapper(this._palette);
 
         var pixels = new Uint8ClampedArray(data.data.length);
         for (var i = 0; i < data.data.length; i+=4) {
@@ -73,38 +73,38 @@ export class Resources {
 }
 
 class ColorMapper {
-    #palette: Uint8ClampedArray
-    #pixelToPalette: Map<number, number>
+    _palette: Uint8ClampedArray
+    _pixelToPalette: Map<number, number>
 
     constructor(palette: Uint8ClampedArray) {
-        this.#palette = palette;
-        this.#pixelToPalette = new Map();
+        this._palette = palette;
+        this._pixelToPalette = new Map();
 
         for (var i = 0; i < palette.length; i+=3) {
             var r = palette[i];
             var g = palette[i+1];
             var b = palette[i+2];
             var hashKey = r + g * 256 + b * 256 * 256;
-            this.#pixelToPalette.set(hashKey, i/3);
+            this._pixelToPalette.set(hashKey, i/3);
         }
     }
 
     assoc(r: number, g: number, b: number): number {
         var hashKey = r + g * 256 + b * 256 * 256;
-        var result = this.#pixelToPalette.get(hashKey);
+        var result = this._pixelToPalette.get(hashKey);
         if (result != undefined) {
             return result
         }
 
         var error=[]
-        for (var pali=0; pali < this.#palette.length; pali+=3) {
-            // redmean: https://en.wikipedia.org/wiki/Color_difference#sRGB
+        for (var pali=0; pali < this._palette.length; pali+=3) {
+            // redmean: https://en.wikipedia.org/wiki/Color_difference_sRGB
             var r1 = r;
             var g1 = g;
             var b1 = b;
-            var r2 = this.#palette[pali];
-            var g2 = this.#palette[pali + 1];
-            var b2 = this.#palette[pali + 2];
+            var r2 = this._palette[pali];
+            var g2 = this._palette[pali + 1];
+            var b2 = this._palette[pali + 2];
 
             var rbar = (r1 + r2) / 2
             var delta = Math.sqrt(
@@ -117,7 +117,7 @@ class ColorMapper {
 
         result = error.indexOf(Math.min(...error))
 
-        this.#pixelToPalette.set(hashKey, result);
+        this._pixelToPalette.set(hashKey, result);
         return result
     }
 }
