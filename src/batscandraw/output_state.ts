@@ -12,6 +12,20 @@ export class OutputState {
     #font: Font
     #sheet: SpriteSheet | null
 
+    // used by camera command
+    #cameraX: number
+    #cameraY: number
+
+    // used by clip command
+    #clipX0: number
+    #clipY0: number
+    #clipX1: number
+    #clipY1: number
+
+    // used by pal command
+    #pal: Uint8ClampedArray
+    #palt: Uint8ClampedArray
+
     constructor(data: Uint8ClampedArray, width: number, height: number, resources: Resources) {
         this.data = data
 
@@ -23,21 +37,30 @@ export class OutputState {
         this.#font = null
         this.#sheet = null
         this.font(PICO8_FONT)
+
+        this.#cameraX = 0
+        this.#cameraY = 0
+
+        this.#pal = new Uint8ClampedArray(256)
+        this.#palt = new Uint8ClampedArray(256)
+
+        this.pal()
+        this.palt()
+        this.clip()
     }
 
     unsafePixel(x: number, y: number, color: number) {
-        // pixel without any rounding or clipping
-        var ix = y * this.width + x;
-        this.data[ix]=color;
-    }
-
-    unsafePixelClip(x: number, y: number, color: number) {
         // TODO: After implementing clipping, do it here
-        this.unsafePixel(x, y, color)
+        if (x >= this.#clipX0 && y >= this.#clipY0 && x < this.#clipX1 && y < this.#clipY1) {
+            var ix = y * this.width + x;
+            this.data[ix] = color;
+        }
     }
 
     pixel(x0: number, y0: number, color: number) {
-        this.unsafePixel(Math.floor(x0), Math.floor(y0), color)
+        let realColor = this.#pal[color]
+
+        this.unsafePixel(Math.floor(x0) + this.#cameraX, Math.floor(y0) + this.#cameraY, realColor)
     }
 
     rect(x0: number, y0: number, x1: number, y1: number, color: number) {
@@ -88,13 +111,19 @@ export class OutputState {
             return
         }
 
+        xMin += this.#cameraX;
+        yMin += this.#cameraY;
+        xMax += this.#cameraX;
+        yMax += this.#cameraY;
+
+        let realColor = this.#pal[color]
         for (var x=xMin; x < xMax; x++) {
-            this.unsafePixelClip(x, yMin, color)
-            this.unsafePixelClip(x, yMax-1, color)
+            this.unsafePixel(x, yMin, realColor)
+            this.unsafePixel(x, yMax-1, realColor)
         }
         for (var y=yMin+1; y < yMax-1; y++) { // don't hit any pixels twice
-            this.unsafePixelClip(xMin, y, color)
-            this.unsafePixelClip(xMax-1, y, color)
+            this.unsafePixel(xMin, y, realColor)
+            this.unsafePixel(xMax-1, y, realColor)
         }
     }
 
@@ -115,9 +144,15 @@ export class OutputState {
             return
         }
 
+        xMin += this.#cameraX;
+        yMin += this.#cameraY;
+        xMax += this.#cameraX;
+        yMax += this.#cameraY;
+
+        let realColor = this.#pal[color]
         for (var y = yMin; y < yMax; y++) {
             for (var x = xMin; x < xMax; x++) {
-                this.unsafePixel(x, y, color)
+                this.unsafePixel(x, y, realColor)
             }
         }
     }
@@ -139,12 +174,17 @@ export class OutputState {
         dx <<= 2;
         dy <<= 2;
 
-        // TODO: Do clipping here some other way
+        x0 += this.#cameraX;
+        y0 += this.#cameraY;
+        x1 += this.#cameraX;
+        y1 += this.#cameraY;
+
+        let realColor = this.#pal[color]
         if (dx > dy) {
             var fraction = dy - (dx >> 1);
             while (true) {
                 if (x0 == x1) { break; }
-                this.unsafePixelClip(x0, y0, color)
+                this.unsafePixel(x0, y0, realColor)
 
                 x0 += stepX;
                 if (fraction >= 0) {
@@ -158,7 +198,7 @@ export class OutputState {
             var fraction = dx - (dy >> 1);
             while (true) {
                 if (y0 == y1) { break; }
-                this.unsafePixelClip(x0, y0, color);
+                this.unsafePixel(x0, y0, realColor);
 
                 if (fraction >= 0) {
                     x0 += stepX;
@@ -186,15 +226,19 @@ export class OutputState {
         var dy = 1;
         var err = 0;
 
+        x0 += this.#cameraX;
+        y0 += this.#cameraY;
+
+        let realColor = this.#pal[color]
         while (x >= y) {
-            this.unsafePixelClip(x0 + x, y0 + y, color)
-            this.unsafePixelClip(x0 - x, y0 + y, color)
-            this.unsafePixelClip(x0 + x, y0 - y, color)
-            this.unsafePixelClip(x0 - x, y0 - y, color)
-            this.unsafePixelClip(x0 + y, y0 + x, color)
-            this.unsafePixelClip(x0 - y, y0 + x, color)
-            this.unsafePixelClip(x0 + y, y0 - x, color)
-            this.unsafePixelClip(x0 - y, y0 - x, color)
+            this.unsafePixel(x0 + x, y0 + y, realColor)
+            this.unsafePixel(x0 - x, y0 + y, realColor)
+            this.unsafePixel(x0 + x, y0 - y, realColor)
+            this.unsafePixel(x0 - x, y0 - y, realColor)
+            this.unsafePixel(x0 + y, y0 + x, realColor)
+            this.unsafePixel(x0 - y, y0 + x, realColor)
+            this.unsafePixel(x0 + y, y0 - x, realColor)
+            this.unsafePixel(x0 - y, y0 - x, realColor)
 
             y += 1; err += dy; dy += 2;
             if (2 * err + dx > 0) {
@@ -214,14 +258,18 @@ export class OutputState {
         var dy = 1;
         var err = 0;
 
+        x0 += this.#cameraX;
+        y0 += this.#cameraY;
+
+        let realColor = this.#pal[color]
         while (x >= y) {
             for (var x_=x0-x; x_ <= x0+x; x_++) {
-                this.unsafePixelClip(x_, y0 + y, color)
-                this.unsafePixelClip(x_, y0 - y, color)
+                this.unsafePixel(x_, y0 + y, realColor)
+                this.unsafePixel(x_, y0 - y, realColor)
             }
             for (var x_=x0-y; x_ <= x0+y; x_++) {
-                this.unsafePixelClip(x_, y0 + x, color)
-                this.unsafePixelClip(x_, y0 - x, color)
+                this.unsafePixel(x_, y0 + x, realColor)
+                this.unsafePixel(x_, y0 - x, realColor)
             }
 
             y += 1; err += dy; dy += 2;
@@ -238,10 +286,15 @@ export class OutputState {
 
     print(text: string, x: number, y: number, color: number) {
         var ss = this.#resources.getSpriteSheetForFont(this.#font)
+        let realColor = this.#pal[color]
+
+        x += this.#cameraX;
+        y += this.#cameraY;
+
         for (var c of text) {
             ss.drawSprite(c.charCodeAt(0)-this.#font.char0, 1, 1, (px, py, v) => {
                 if (v == 255) { return; }
-                this.pixel(x+px, y+py, color)
+                this.pixel(x+px, y+py, realColor)
             })
             x += ss.spriteWidth;
         }
@@ -259,12 +312,76 @@ export class OutputState {
         var width = w * ss.spriteWidth;
         var height = h * ss.spriteHeight;
 
+        x += this.#cameraX;
+        y += this.#cameraY;
+
+        let palt = this.#palt;
         ss.drawSprite(n, w, h, (px, py, v) => {
             if (flip_x) { px = width - px - 1 }
             if (flip_y) { py = height - py - 1 }
 
-            if (v == 255) { return; }  // TODO: Handle this with the PALT table
-            this.pixel(x+px, y+py, v)
+            if (palt[v] != 0) { return; }
+            let realColor = this.#pal[v]
+            this.pixel(x+px, y+py, realColor)
         })
+    }
+
+    pal(c0?: number,  c1?: number) {
+        if (typeof c0 === "undefined" && typeof c1 === "undefined") {
+            // reset palette
+            for (var i = 0; i<256; i++) {
+                this.#pal[i] = i;
+            }
+        } else if (typeof c1 === "undefined") {
+            throw TypeError("either both arguments must be present or neither");
+        } else {
+            this.#pal[c0] = c1;
+        }
+    }
+
+    palt(c0?: number, transparent?: boolean) {
+        if (typeof c0 === "undefined" && typeof transparent === "undefined") {
+            for (var i = 0; i<256; i++) {
+                this.#palt[i] = 0
+            }
+            this.#palt[255] = 1
+        } else if (typeof transparent === "undefined") {
+            throw TypeError("either both arguments must be present or neither")
+        } else {
+            this.#palt[c0] = transparent ? 1 : 0;
+        }
+    }
+
+    camera(x: number, y: number) {
+        this.#cameraX = -x;
+        this.#cameraY = -y;
+    }
+
+    clip(x?: number, y?: number, w?: number, h?: number, previous?: boolean) {
+        if (typeof x == "undefined" && typeof y == "undefined" && typeof w == "undefined" && typeof h == "undefined") {
+            this.#clipX0 = 0
+            this.#clipY0 = 0
+            this.#clipX1 = this.width
+            this.#clipY1 = this.height
+        } else if (typeof x == "undefined" || typeof y == "undefined" || typeof w == "undefined" || typeof h == "undefined") { 
+            throw TypeError("either four arguments must be present, five, or neither");
+        } else {
+            let x0 = x;
+            let y0 = y;
+            let x1 = x + w;
+            let y1 = y + h;
+
+            if (previous) {
+                x0 = Math.max(this.#clipX0, x0);
+                y0 = Math.max(this.#clipY0, y0);
+                x1 = Math.min(this.#clipX1, x1);
+                y1 = Math.min(this.#clipY1, y1);
+            }
+
+            this.#clipX0=x0;
+            this.#clipY0=y0;
+            this.#clipX1=x1;
+            this.#clipY1=y1;
+        }
     }
 }

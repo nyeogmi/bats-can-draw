@@ -92,4 +92,20 @@ export class Bats {
     spr(n: number, x: number, y: number, w: number, h: number, flip_x: boolean, flip_y: boolean) {
         this.#unsafeOutput().spr(n, x, y, w, h, flip_x, flip_y)
     }
+
+    pal(c0?: number,  c1?: number) {
+        this.#unsafeOutput().pal(c0, c1)
+    }
+
+    palt(c0?: number,  transparent?: boolean) {
+        this.#unsafeOutput().palt(c0, transparent)
+    }
+
+    camera(x: number, y: number) {
+        this.#unsafeOutput().camera(x, y)
+    }
+
+    clip(x?: number, y?: number, w?: number, h?: number, previous?: boolean) {
+        this.#unsafeOutput().clip(x, y, w, h, previous)
+    }
 }
