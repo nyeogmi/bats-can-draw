@@ -1,2 +1,4 @@
 dist/
 parcel_cache/
+package.json
+yarn.lock

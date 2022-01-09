@@ -55,6 +55,23 @@ In addition, Parcel doesn't use the real typescript compiler and has a default b
 - Some parcel-specific folders to not touch (`.parcel-cache`, `dist`)
 - Some NPM-specific folders to not touch (`node_modules`)
 
+The package.json file you end up with will probably look something like this: 
+
+```json
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel": "^2.1.1"
+  },
+  "dependencies": {
+    "bats_can_draw": "^0.0.1"
+  }
+}
+```
+
 Man, JavaScript tooling wreaks fucking havoc on your directory structure, doesn't it?
 
 ## TODO
