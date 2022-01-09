@@ -1,4 +1,4 @@
-import { Font, Resources } from "./resources";
+import { Font, Resources, SpriteSheet } from "./resources";
 import { PICO8_FONT } from "./stock";
 
 export class OutputState {
@@ -10,6 +10,7 @@ export class OutputState {
     readonly #resources: Resources
 
     #font: Font
+    #sheet: SpriteSheet | null
 
     constructor(data: Uint8ClampedArray, width: number, height: number, resources: Resources) {
         this.data = data
@@ -20,6 +21,7 @@ export class OutputState {
         this.#resources = resources
 
         this.#font = null
+        this.#sheet = null
         this.font(PICO8_FONT)
     }
 
@@ -243,5 +245,26 @@ export class OutputState {
             })
             x += ss.spriteWidth;
         }
+    }
+
+    sheet(sheet: SpriteSheet) {
+        this.#sheet=sheet;
+        this.#resources.getSpriteSheetForSpriteSheet(this.#sheet)  // preload
+    }
+
+    spr(n: number, x: number, y: number, w: number, h: number, flip_x: boolean, flip_y: boolean) {
+        if (this.#sheet == null) { return }
+
+        var ss = this.#resources.getSpriteSheetForSpriteSheet(this.#sheet);
+        var width = w * ss.spriteWidth;
+        var height = h * ss.spriteHeight;
+
+        ss.drawSprite(n, w, h, (px, py, v) => {
+            if (flip_x) { px = width - px - 1 }
+            if (flip_y) { py = height - py - 1 }
+
+            if (v == 255) { return; }  // TODO: Handle this with the PALT table
+            this.pixel(x+px, y+py, v)
+        })
     }
 }

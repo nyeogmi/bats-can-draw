@@ -1,6 +1,6 @@
 import { InputState } from "./input_state";
 import { OutputState } from "./output_state";
-import { Font, Resources } from "./resources";
+import { Font, Resources, SpriteSheet } from "./resources";
 
 export class Bats {
     #inputState: InputState;
@@ -74,18 +74,22 @@ export class Bats {
     }
 
     font(font: Font) {
-        if (this.#output == null) {
-            throw new TypeError("this Bats has no output")
-        }
-
-        this.#output.font(font)
+        this.#unsafeOutput().font(font)
     }
 
     print(text: string, x: number, y: number, color: number) {
-        if (this.#output == null) {
-            throw new TypeError("this Bats has no output")
-        }
-        
-        this.#output.print(text, x, y, color)
+        this.#unsafeOutput().print(text, x, y, color)
+    }
+
+    preloadSheet(sheet: SpriteSheet) {
+        this.#resources.getSpriteSheetForSpriteSheet(sheet);
+    }
+
+    sheet(sheet: SpriteSheet) {
+        this.#unsafeOutput().sheet(sheet)
+    }
+
+    spr(n: number, x: number, y: number, w: number, h: number, flip_x: boolean, flip_y: boolean) {
+        this.#unsafeOutput().spr(n, x, y, w, h, flip_x, flip_y)
     }
 }

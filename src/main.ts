@@ -1,5 +1,4 @@
-import { Bats, manage } from "./batscandraw";
-import { TALL_FONT } from "./batscandraw/stock";
+import { Bats, manage, SpriteSheet, TALL_FONT } from "./batscandraw";
 import "./reset.css"
 
 function main() {
@@ -9,6 +8,14 @@ function main() {
         {width:320, height:240},
         {draw, update}
     );
+}
+
+var DEMO_SPRITES: SpriteSheet = {
+    name: "DEMO_SPRITES",
+    url: "demo_sprites.png",
+    width: 8,
+    height: 8,
+    transparent: 0,
 }
 
 function setup() {
@@ -35,6 +42,12 @@ function setup() {
            bats.print("Hello, world! It's me, bats!!", 0, 64, 7);
            bats.font(TALL_FONT);
            bats.print("Hello, world! It's me, bats!!", 0, 71, 7);
+
+           bats.sheet(DEMO_SPRITES);
+           bats.spr(0, 32, 32, 1, 2, false, false);
+           bats.spr(1, 37, 35, 1, 2, false, false);
+           bats.spr(32, 48, 35, 1, 2, true, false);
+           bats.spr(35, 58, 35, 1, 2, false, true);
         },
         update: function(bats: Bats) {
             frame+=1

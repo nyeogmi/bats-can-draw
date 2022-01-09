@@ -10,11 +10,15 @@ export class Resources {
         this.#palette = palette
     }
 
-    getSpriteSheetForFont(font: Font):  InternalSpriteSheet {
-        return this.getSpriteSheet(font.name, font.url, font.width, font.height)
+    getSpriteSheetForSpriteSheet(spritesheet: SpriteSheet):  InternalSpriteSheet {
+        return this.getSpriteSheet(spritesheet.name, spritesheet.url, spritesheet.width, spritesheet.height, spritesheet.transparent ?? 255)
     }
 
-    getSpriteSheet(name: string, url: string, w: number, h: number): InternalSpriteSheet {
+    getSpriteSheetForFont(font: Font):  InternalSpriteSheet {
+        return this.getSpriteSheet(font.name, font.url, font.width, font.height, 255)
+    }
+
+    getSpriteSheet(name: string, url: string, w: number, h: number, transparent: number): InternalSpriteSheet {
         var ss = this.#spritesheets.get(name);
         if (ss !== undefined) { return ss; }
 
@@ -32,7 +36,7 @@ export class Resources {
             ctx.drawImage(img, 0, 0);
             let data = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight)
 
-            this.#spritesheets.set(name, this.#processSpriteSheet(data, w, h));
+            this.#spritesheets.set(name, this.#processSpriteSheet(data, w, h, transparent));
         }
         img.onerror = (e) => {
             console.error(`could not load spritesheet ${url}: ${e}`)
@@ -42,7 +46,7 @@ export class Resources {
         return this.#spritesheets.get(name)
     }
 
-    #processSpriteSheet(data, spriteWidth: number, spriteHeight: number): InternalSpriteSheet {
+    #processSpriteSheet(data, spriteWidth: number, spriteHeight: number, transparent: number): InternalSpriteSheet {
         var mapper = new ColorMapper(this.#palette);
 
         var pixels = new Uint8ClampedArray(data.data.length);
@@ -53,6 +57,8 @@ export class Resources {
             } else {
                 color=mapper.assoc(data.data[i], data.data[i+1], data.data[i+2]);
             }
+
+            if (color == transparent) { color = 255; }
 
             pixels[i/4] = color;
         }
@@ -117,4 +123,12 @@ export interface Font {
     width: number
     height: number
     char0: number
+}
+
+export interface SpriteSheet {
+    name: string
+    url: string
+    width: number
+    height: number
+    transparent?: number
 }
