@@ -2,6 +2,9 @@ import { Bats, manage, SpriteSheet, TALL_FONT } from "bats_can_draw";
 import "./reset.css"
 
 function main() {
+    // Uncomment this and look for IDE errors to see if your IDE respects tsconfig.json
+    // (This fails compilation in strict mode)
+    // var x: number = undefined;
     var {draw,update}=setup();
     manage(
         document.getElementById("game") as HTMLCanvasElement,

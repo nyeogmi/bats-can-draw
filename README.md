@@ -1,6 +1,6 @@
 # bats-can-draw
 
-Hey! This is just a quick starter kit for Pico-8-style gamedev on Canvas with Parcel.
+Hey! This is just a quick starter kit for Pico-8-style gamedev on Canvas. It's an NPM package, plus 
 
 Namely that means:
 
@@ -19,6 +19,7 @@ I'll probably add some support for Pico-8 style IO later. (I haven't coded this 
 - I wrote a little demo in main.ts that exploits these features
 - I added a .gitignore which you can adapt for your project
 - I added Pico-8-style keyboard input and graphics operations
+- I set up a little NPM package to include the common code that is not part of the  starter kit.
 
 ## Why you would use this
 
@@ -34,6 +35,8 @@ You might use this if:
 ## Gotchas
 
 Parcel seems immature and kind of unstable. When I used `<link rel="stylesheet" href="reset.css">` to add my reset.css file, things broke. When I attempted to use parcel with npm, I got a completely broken installation.
+
+In addition, Parcel doesn't use the real typescript compiler and has a default behavior of literally ignoring all type errors. (Note that VS Code will do the right thing and present you with all your errors, and respects the `strict` setting in `tsconfig.json`.)
 
 ## Steps
 
