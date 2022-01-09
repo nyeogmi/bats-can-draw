@@ -1,4 +1,4 @@
-import { Bats, manage, SpriteSheet, TALL_FONT } from "./batscandraw";
+import { Bats, manage, SpriteSheet, TALL_FONT } from "bats_can_draw";
 import "./reset.css"
 
 function main() {

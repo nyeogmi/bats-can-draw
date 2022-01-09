@@ -21,7 +21,7 @@ export class InternalSpriteSheet {
         this.spriteHeight = spriteHeight
     }
 
-    drawSprite(ix: number, wx: number, wy: number, callback) {
+    drawSprite(ix: number, wx: number, wy: number, callback: (x: number, y: number, color: number) => void) {
         var tilesWide = Math.floor(this.dataWidth / this.spriteWidth)
         var tilesTall = Math.floor(this.dataHeight / this.spriteHeight)
 

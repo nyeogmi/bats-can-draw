@@ -38,17 +38,19 @@ Parcel seems immature and kind of unstable. When I used `<link rel="stylesheet" 
 ## Steps
 
 - Install Node+NPM and Yarn. (I use Node 16.13.1 LTS and Yarn 1.22.17)
-- Create a project folder (ex. `kobolds`)
-- Copy the files in src/ to the project folder (ex `kobolds/src/index.html` et al)
+- Create a project folder (ex. `kobolds`. You can also just use the existing `demo` folder)
+- Copy the files in `demo` to the project folder (ex `kobolds/src/index.html` et al)
+- Initialize Yarn (`yarn init -y`)
 - Install Parcel (`yarn add --dev parcel`. I use 2.1.1)
-- Run Parcel from your project (`cd kobolds`, `yarn parcel src/index.html`)
+- Install bats-can-draw (`yarn add file:..` if you just cloned from git and are using the actual `demo` folder; `yarn add bats_can_draw` otherwise)
+- Run Parcel from your project (`cd kobolds`, `yarn parcel src/index.html --no-cache`) 
 - Navigate to Parcel's URL in your browser: `http://localhost:1234`
 
 ## What you'll end up with
 
-- A package.json and yarn.lock file which collectively say "this project uses Parcel." You should version control these so other people can build your code on the exact same package configuration.
-- Some parcel-specific folders to not touch (.parcel-cache, dist)
-- Some NPM-specific folders to not touch (node_modules)
+- A `package.json` and `yarn.lock` file which collectively say "this project uses Parcel and `bats-can-draw`." You should version control these so other people can build your code on the exact same package configuration.
+- Some parcel-specific folders to not touch (`.parcel-cache`, `dist`)
+- Some NPM-specific folders to not touch (`node_modules`)
 
 Man, JavaScript tooling wreaks fucking havoc on your directory structure, doesn't it?
 

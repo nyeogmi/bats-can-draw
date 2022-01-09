@@ -1,5 +1,29 @@
 {
+  "name": "bats_can_draw",
+  "version": "0.0.1",
+  "description": "pico 8-like functionality over Canvas",
+  "main": "lib/bats_can_draw.js",
+  "types": "lib/bats_can_draw.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyeogmi/bats-can-draw.git"
+  },
+  "author": "Nyeogmi",
+  "license": "MIT OR Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nyeogmi/bats-can-draw/issues"
+  },
+  "homepage": "https://github.com/nyeogmi/bats-can-draw#readme",
   "devDependencies": {
-    "parcel": "^2.1.1"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
   }
 }

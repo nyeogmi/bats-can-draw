@@ -32,6 +32,7 @@ export class Resources {
             cnv.width = img.naturalWidth;
             cnv.height = img.naturalHeight;
             let ctx = cnv.getContext("2d")
+            if (ctx == null) { throw new TypeError("couldn't get 2d drawing context"); }
             ctx.imageSmoothingEnabled=false;
             ctx.drawImage(img, 0, 0);
             let data = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight)
@@ -43,10 +44,14 @@ export class Resources {
         }
         img.src = url
 
-        return this.#spritesheets.get(name)
+        ss = this.#spritesheets.get(name)
+        if (ss === undefined) {
+            throw new TypeError("spritesheet was somehow undefined")
+        }
+        return ss;
     }
 
-    #processSpriteSheet(data, spriteWidth: number, spriteHeight: number, transparent: number): InternalSpriteSheet {
+    #processSpriteSheet(data: ImageData, spriteWidth: number, spriteHeight: number, transparent: number): InternalSpriteSheet {
         var mapper = new ColorMapper(this.#palette);
 
         var pixels = new Uint8ClampedArray(data.data.length);
@@ -112,7 +117,7 @@ class ColorMapper {
 
         result = error.indexOf(Math.min(...error))
 
-        this.#pixelToPalette[hashKey] = result;
+        this.#pixelToPalette.set(hashKey, result);
         return result
     }
 }

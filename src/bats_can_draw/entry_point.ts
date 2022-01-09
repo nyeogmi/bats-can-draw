@@ -25,15 +25,17 @@ var palette=new Uint8ClampedArray([
 export function manage(
     element: HTMLCanvasElement,
     {width, height}: {width: number, height: number},
-    {draw, update}
+    {draw, update}: {draw: (bats: Bats) => void, update: (bats: Bats) => void}
 ) {
     restyle(element, {width, height});
-    var ctx: CanvasRenderingContext2D = element.getContext("2d")
+    let ctxN: CanvasRenderingContext2D | null = element.getContext("2d")
+    if (ctxN == null) { throw new TypeError("couldn't get 2d context"); }
+    let ctx: CanvasRenderingContext2D = ctxN;
     ctx.imageSmoothingEnabled=false;
     
     var frame=0.0
 
-    var previousTs=null
+    var previousTs: DOMHighResTimeStamp | null=null
     var rawBuf=ctx.createImageData(width,height);
     var paletteBuf=new Uint8ClampedArray(width * height);
     var inputState = new InputState();
@@ -47,7 +49,12 @@ export function manage(
     }
 
     var onRedraw = (ts: DOMHighResTimeStamp) => {
-        var frameTime = (ts - previousTs) * (1/1000)
+        var frameTime: number
+        if (previousTs == null) {
+            frameTime = 0.0
+        } else {
+            frameTime = (ts - previousTs) * (1/1000)
+        }
         previousTs=ts;
 
         frame+=frameTime*60;

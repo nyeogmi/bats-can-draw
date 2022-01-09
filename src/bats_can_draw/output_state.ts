@@ -1,3 +1,4 @@
+import { PICO8_FONT_PNG } from "./blobs";
 import { Font, Resources, SpriteSheet } from "./resources";
 import { PICO8_FONT } from "./stock";
 
@@ -34,7 +35,7 @@ export class OutputState {
 
         this.#resources = resources
 
-        this.#font = null
+        this.#font = PICO8_FONT
         this.#sheet = null
         this.font(PICO8_FONT)
 
@@ -43,6 +44,11 @@ export class OutputState {
 
         this.#pal = new Uint8ClampedArray(256)
         this.#palt = new Uint8ClampedArray(256)
+
+        this.#clipX0=0
+        this.#clipY0=0
+        this.#clipX1=width
+        this.#clipY1=height
 
         this.pal()
         this.palt()
@@ -327,12 +333,12 @@ export class OutputState {
     }
 
     pal(c0?: number,  c1?: number) {
-        if (typeof c0 === "undefined" && typeof c1 === "undefined") {
+        if (c0 === undefined && c1 === undefined) {
             // reset palette
             for (var i = 0; i<256; i++) {
                 this.#pal[i] = i;
             }
-        } else if (typeof c1 === "undefined") {
+        } else if (c0 === undefined || c1 === undefined) {
             throw TypeError("either both arguments must be present or neither");
         } else {
             this.#pal[c0] = c1;
@@ -340,12 +346,12 @@ export class OutputState {
     }
 
     palt(c0?: number, transparent?: boolean) {
-        if (typeof c0 === "undefined" && typeof transparent === "undefined") {
+        if (c0 === undefined && transparent === undefined) {
             for (var i = 0; i<256; i++) {
                 this.#palt[i] = 0
             }
             this.#palt[255] = 1
-        } else if (typeof transparent === "undefined") {
+        } else if (c0 === undefined || transparent === undefined) {
             throw TypeError("either both arguments must be present or neither")
         } else {
             this.#palt[c0] = transparent ? 1 : 0;

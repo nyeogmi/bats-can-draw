@@ -1,10 +1,10 @@
 export class InputState {
-    up: boolean;
-    down: boolean;
-    left: boolean;
-    right: boolean;
-    z: boolean;
-    x: boolean;
+    up: boolean = false;
+    down: boolean = false;
+    left: boolean = false;
+    right: boolean = false;
+    z: boolean = false;
+    x: boolean = false;
 
     keyUp(k: KeyboardEvent) {
         this.key(k, false)
