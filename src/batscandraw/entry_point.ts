@@ -1,6 +1,7 @@
 import { Bats } from "./bats";
-import {InputState} from "./input_state";
+import { InputState } from "./input_state";
 import { OutputState } from "./output_state";
+import { Resources } from "./resources";
 
 var palette=new Uint8ClampedArray([
     0x00, 0x00, 0x00,
@@ -36,6 +37,7 @@ export function manage(
     var rawBuf=ctx.createImageData(width,height);
     var paletteBuf=new Uint8ClampedArray(width * height);
     var inputState = new InputState();
+    var resources = new Resources(palette);
 
     document.addEventListener("keydown", (k) => inputState.keyDown(k))
     document.addEventListener("keyup", (k)=>inputState.keyUp(k))
@@ -52,14 +54,14 @@ export function manage(
 
         if (frame>10.0) { frame=0.0 } // ultimately limit the number of frames we get behind
         while (frame>1.0) { 
-            update(new Bats(inputState, null, width, height)); 
+            update(new Bats(inputState, null, resources, width, height)); 
             frame-=1.0; 
         }
         
         // fill with color 0
         for(var i=0; i < width * height;i++) { paletteBuf[i]=0; }
 
-        draw(new Bats(inputState, new OutputState(paletteBuf, width, height), width, height));
+        draw(new Bats(inputState, new OutputState(paletteBuf, width, height, resources), resources, width, height));
 
         for(var j=0; j<3; j++) {
             for(var i=0; i < width * height;i++) {

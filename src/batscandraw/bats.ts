@@ -1,16 +1,19 @@
 import { InputState } from "./input_state";
 import { OutputState } from "./output_state";
+import { Font, Resources } from "./resources";
 
 export class Bats {
     #inputState: InputState;
     #output: OutputState|null;
+    #resources: Resources;
 
     width: number;
     height: number;
 
-    constructor(inputState: InputState, output: OutputState|null, width: number, height: number) {
+    constructor(inputState: InputState, output: OutputState|null, resources: Resources, width: number, height: number) {
         this.#inputState = inputState;
         this.#output = output;
+        this.#resources = resources;
 
         this.width = width;
         this.height = height;
@@ -64,5 +67,25 @@ export class Bats {
 
     circfill(x0: number, y0: number, r: number, color: number) {
         this.#unsafeOutput().circfill(x0, y0, r, color)
+    }
+
+    preloadFont(font: Font) {
+        this.#resources.getSpriteSheetForFont(font);
+    }
+
+    font(font: Font) {
+        if (this.#output == null) {
+            throw new TypeError("this Bats has no output")
+        }
+
+        this.#output.font(font)
+    }
+
+    print(text: string, x: number, y: number, color: number) {
+        if (this.#output == null) {
+            throw new TypeError("this Bats has no output")
+        }
+        
+        this.#output.print(text, x, y, color)
     }
 }

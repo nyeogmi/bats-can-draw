@@ -1,4 +1,5 @@
 import { Bats, manage } from "./batscandraw";
+import { TALL_FONT } from "./batscandraw/stock";
 import "./reset.css"
 
 function main() {
@@ -17,7 +18,6 @@ function setup() {
             var width=bats.width
             var height=bats.height
 
-            
             for (var y=0; y<height; y++) {
                 for(var x=0; x<width; x++) {
                     var x2 = (x - frame + 128) % 16;
@@ -31,6 +31,10 @@ function setup() {
            bats.lineho(0, 0, 16, 8, 4);
            bats.circfill(32, 32, 17, 11);
            bats.circ(32, 32, 21, 10);
+
+           bats.print("Hello, world! It's me, bats!!", 0, 64, 7);
+           bats.font(TALL_FONT);
+           bats.print("Hello, world! It's me, bats!!", 0, 71, 7);
         },
         update: function(bats: Bats) {
             frame+=1

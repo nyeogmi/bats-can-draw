@@ -1,14 +1,26 @@
+import { Font, Resources } from "./resources";
+import { PICO8_FONT } from "./stock";
+
 export class OutputState {
-    data: Uint8ClampedArray;
+    readonly data: Uint8ClampedArray;
 
-    width: number
-    height: number
+    readonly width: number
+    readonly height: number
 
-    constructor(data: Uint8ClampedArray, width: number, height: number) {
+    readonly #resources: Resources
+
+    #font: Font
+
+    constructor(data: Uint8ClampedArray, width: number, height: number, resources: Resources) {
         this.data = data
 
         this.width = width
         this.height = height
+
+        this.#resources = resources
+
+        this.#font = null
+        this.font(PICO8_FONT)
     }
 
     unsafePixel(x: number, y: number, color: number) {
@@ -214,6 +226,22 @@ export class OutputState {
             if (2 * err + dx > 0) {
                 x -= 1; err += dx; dx += 2;
             }
+        }
+    }
+
+    font(font: Font) {
+        this.#font=font;
+        this.#resources.getSpriteSheetForFont(this.#font)  // preload
+    }
+
+    print(text: string, x: number, y: number, color: number) {
+        var ss = this.#resources.getSpriteSheetForFont(this.#font)
+        for (var c of text) {
+            ss.drawSprite(c.charCodeAt(0)-this.#font.char0, 1, 1, (px, py, v) => {
+                if (v == 255) { return; }
+                this.pixel(x+px, y+py, color)
+            })
+            x += ss.spriteWidth;
         }
     }
 }
